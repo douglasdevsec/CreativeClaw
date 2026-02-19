@@ -1,0 +1,23 @@
+{
+  "id": "com.creativeclaw.uxp.illustrator",
+  "name": "CreativeClaw (Illustrator)",
+  "version": "1.0.0",
+  "main": "index.html",
+  "manifestVersion": 5,
+  "host": [
+    {
+      "app": "ILST",
+      "minVersion": "28.0.0"
+    }
+  ],
+  "entrypoints": [
+    {
+      "type": "panel",
+      "id": "creativeclaw-panel-ai",
+      "label": "CreativeClaw",
+      "minWidth": 300,
+      "minHeight": 300,
+      "dockable": true
+    }
+  ]
+}

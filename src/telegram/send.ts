@@ -60,6 +60,8 @@ type TelegramSendOpts = {
   messageThreadId?: number;
   /** Inline keyboard buttons (reply markup). */
   buttons?: TelegramInlineButtons;
+  /** Thumbnail for documents/videos (URL, file path, or Buffer). */
+  thumbnail?: string | Buffer;
 };
 
 type TelegramSendResult = {
@@ -653,7 +655,10 @@ export async function sendMessageTelegram(
           api.sendDocument(
             chatId,
             file,
-            effectiveParams as Parameters<typeof api.sendDocument>[2],
+            {
+              ...effectiveParams,
+              ...(opts.thumbnail ? { thumbnail: new InputFile(opts.thumbnail) } : {}),
+            } as Parameters<typeof api.sendDocument>[2],
           ) as Promise<TelegramMessageLike>,
       };
     })();

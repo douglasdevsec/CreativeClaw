@@ -1,0 +1,31 @@
+{
+  "id": "com.creativeclaw.uxp",
+  "name": "CreativeClaw",
+  "version": "1.0.0",
+  "main": "index.html",
+  "manifestVersion": 5,
+  "host": [
+    {
+      "app": "PS",
+      "minVersion": "23.0.0"
+    }
+  ],
+  "entrypoints": [
+    {
+      "type": "panel",
+      "id": "creativeclaw-panel",
+      "label": "CreativeClaw",
+      "minWidth": 300,
+      "minHeight": 300,
+      "dockable": true
+    }
+  ],
+  "requiredPermissions": {
+    "localFileSystem": "fullAccess",
+    "network": {
+      "domains": [
+        "ws://localhost:8081"
+      ]
+    }
+  }
+}

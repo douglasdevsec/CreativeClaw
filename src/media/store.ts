@@ -5,13 +5,13 @@ import { request as httpRequest } from "node:http";
 import { request as httpsRequest } from "node:https";
 import path from "node:path";
 import { pipeline } from "node:stream/promises";
-import { SafeOpenError, readLocalFileSafely } from "../infra/fs-safe.js";
+import { SafeOpenError, readLocalFileSafely, openVerifiedLocalFile } from "../infra/fs-safe.js";
 import { resolvePinnedHostname } from "../infra/net/ssrf.js";
 import { resolveConfigDir } from "../utils.js";
 import { detectMime, extensionForMime } from "./mime.js";
 
 const resolveMediaDir = () => path.join(resolveConfigDir(), "media");
-export const MEDIA_MAX_BYTES = 5 * 1024 * 1024; // 5MB default
+export const MEDIA_MAX_BYTES = 2 * 1024 * 1024 * 1024; // 2GB
 const MAX_BYTES = MEDIA_MAX_BYTES;
 const DEFAULT_TTL_MS = 2 * 60 * 1000; // 2 minutes
 type RequestImpl = typeof httpRequest;
@@ -275,13 +275,28 @@ export async function saveMediaSource(
   }
   // local path
   try {
-    const { buffer, stat } = await readLocalFileSafely({ filePath: source, maxBytes: MAX_BYTES });
-    const mime = await detectMime({ buffer, filePath: source });
-    const ext = extensionForMime(mime) ?? path.extname(source);
-    const id = ext ? `${baseId}${ext}` : baseId;
-    const dest = path.join(dir, id);
-    await fs.writeFile(dest, buffer, { mode: 0o600 });
-    return { id, path: dest, size: stat.size, contentType: mime };
+    const opened = await openVerifiedLocalFile(source);
+    try {
+      if (opened.stat.size > MEDIA_MAX_BYTES) {
+        throw new SafeOpenError("too-large", `Media exceeds limit of ${MEDIA_MAX_BYTES} bytes`);
+      }
+      const sniffLen = Math.min(opened.stat.size, 16384);
+      const sniffBuffer = Buffer.alloc(sniffLen);
+      await opened.handle.read(sniffBuffer, 0, sniffLen, 0);
+
+      const mime = await detectMime({ buffer: sniffBuffer, filePath: source });
+      const ext = extensionForMime(mime) ?? path.extname(source);
+      const id = ext ? `${baseId}${ext}` : baseId;
+      const dest = path.join(dir, id);
+
+      const readStream = opened.handle.createReadStream({ start: 0 });
+      const writeStream = createWriteStream(dest, { mode: 0o600 });
+      await pipeline(readStream, writeStream);
+
+      return { id, path: dest, size: opened.stat.size, contentType: mime };
+    } finally {
+      await opened.handle.close().catch(() => {});
+    }
   } catch (err) {
     if (err instanceof SafeOpenError) {
       throw toSaveMediaSourceError(err);

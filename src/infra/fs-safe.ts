@@ -49,7 +49,7 @@ const isNotFoundError = (err: unknown) =>
 const isSymlinkOpenError = (err: unknown) =>
   isNodeError(err) && (err.code === "ELOOP" || err.code === "EINVAL" || err.code === "ENOTSUP");
 
-async function openVerifiedLocalFile(filePath: string): Promise<SafeOpenResult> {
+export async function openVerifiedLocalFile(filePath: string): Promise<SafeOpenResult> {
   let handle: FileHandle;
   try {
     handle = await fs.open(filePath, OPEN_READ_FLAGS);

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CreativeClaw CEP</title>
+    <script>
+        const BRIDGE_URL = 'ws://localhost:8081';
+        let socket;
+
+        function log(msg, color = '#ddd') {
+            const el = document.getElementById('log');
+            const line = document.createElement('div');
+            line.innerText = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            line.style.color = color;
+            el.appendChild(line);
+            console.log(msg);
+        }
+
+        function setStatus(msg, color) {
+            const el = document.getElementById('status');
+            el.innerText = msg;
+            el.style.color = color;
+        }
+
+        function connect() {
+            setStatus('Connecting...', '#ff9800');
+            
+            try {
+                // Use native browser WebSocket (CEP is Chromium)
+                socket = new WebSocket(BRIDGE_URL);
+
+                socket.onopen = () => {
+                    setStatus('Connected', '#4caf50');
+                    log('Connected to Bridge');
+                    // Register as "cep" client
+                    socket.send(JSON.stringify({ target: 'uxp', command: 'register_cep' })); 
+                };
+
+                socket.onmessage = (event) => {
+                    try {
+                        const msg = JSON.parse(event.data);
+                        log('RX: ' + msg.command, '#2196f3');
+                        
+                        if (msg.command === 'ping') {
+                            socket.send(JSON.stringify({ target: 'agent', payload: 'pong' }));
+                        } else if (msg.command === 'create_sequence') {
+                           // Call ExtendScript defined in host/index.jsx
+                           const seqName = msg.payload.name || "AI Sequence";
+                           const script = `createSequence("${seqName}")`;
+                           
+                           if (window.__adobe_cep__) {
+                               window.__adobe_cep__.evalScript(script, (result) => {
+                                   log('Eval Result: ' + result, '#4caf50');
+                                   socket.send(JSON.stringify({ target: 'agent', id: msg.id, payload: { status: 'success', result: result } }));
+                               });
+                           } else {
+                               log('Mock Mode: No CEP interface', '#ff9800');
+                               // Send mock response for testing outside PPro
+                               socket.send(JSON.stringify({ target: 'agent', id: msg.id, payload: { status: 'mock_success' } }));
+                           }
+                        }
+                    } catch (e) {
+                        log('Error processing: ' + e.message, '#f44336');
+                    }
+                };
+
+                socket.onclose = (evt) => {
+                    setStatus('Disconnected', '#f44336');
+                    log(`Socket closed (Code: ${evt.code}). Retrying in 3s...`, '#f44336');
+                    setTimeout(connect, 3000);
+                };
+
+                socket.onerror = (err) => {
+                    log('Socket Error: ' + err, '#f44336');
+                    setStatus('Error', '#f44336');
+                };
+
+            } catch (e) {
+                setStatus('Critical Error', '#f44336');
+                log('Init Error: ' + e.message, '#f44336');
+            }
+        }
+        
+        window.onload = connect;
+    </script>
+    <style>
+        body { background: #003366; color: #fff; font-family: "Adobe Clean", sans-serif; padding: 10px; font-size: 12px; }
+        h3 { margin-top: 0; color: #fff; }
+        #status { font-weight: bold; margin-bottom: 10px; }
+        #log { border-top: 1px solid #444; padding-top: 10px; font-family: monospace; max-height: 200px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <h3>CreativeClaw CEP</h3>
+    <div id="status">Init...</div>
+    <div id="log"></div>
+</body>
+</html>

@@ -50,6 +50,7 @@ export function createWebSendApi(params: {
             caption: text || undefined,
             mimetype: mediaType,
             ...(gifPlayback ? { gifPlayback: true } : {}),
+            jpegThumbnail: sendOptions?.jpegThumbnail,
           };
         } else {
           const fileName = sendOptions?.fileName?.trim() || "file";
@@ -58,6 +59,7 @@ export function createWebSendApi(params: {
             fileName,
             caption: text || undefined,
             mimetype: mediaType,
+            jpegThumbnail: sendOptions?.jpegThumbnail,
           };
         }
       } else {
