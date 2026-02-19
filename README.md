@@ -1,9 +1,13 @@
-# 🦞 OpenClaw — Personal AI Assistant
+# 🦞 CreativeClaw — Professional Graphic Editing Assistant
+
+> [!IMPORTANT]
+> **ESTADO: EN DESARROLLO / IN DEVELOPMENT**
+> Este proyecto es un fork de OpenClaw, adaptado bajo la identidad **CreativeClaw**.
 
 <p align="center">
     <picture>
         <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/openclaw/openclaw/main/docs/assets/openclaw-logo-text-dark.png">
-        <img src="https://raw.githubusercontent.com/openclaw/openclaw/main/docs/assets/openclaw-logo-text.png" alt="OpenClaw" width="500">
+        <img src="https://raw.githubusercontent.com/openclaw/openclaw/main/docs/assets/openclaw-logo-text.png" alt="CreativeClaw" width="500">
     </picture>
 </p>
 
@@ -18,10 +22,11 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge" alt="MIT License"></a>
 </p>
 
-**OpenClaw** is a _personal AI assistant_ you run on your own devices.
-It answers you on the channels you already use (WhatsApp, Telegram, Slack, Discord, Google Chat, Signal, iMessage, Microsoft Teams, WebChat), plus extension channels like BlueBubbles, Matrix, Zalo, and Zalo Personal. It can speak and listen on macOS/iOS/Android, and can render a live Canvas you control. The Gateway is just the control plane — the product is the assistant.
+**CreativeClaw** es una adaptación de este marco de trabajo para propósitos específicos de edición Gráfica profesional.
 
-If you want a personal, single-user assistant that feels local, fast, and always-on, this is it.
+El proyecto **CreativeClaw** aspira a gestionar flujos de trabajo en **Photoshop, Illustrator, After Effects y Premiere Pro**; la capacidad de mantener el contexto a través de sesiones que pueden durar horas o incluso días es fundamental.
+
+A diferencia de los chatbots tradicionales, **CreativeClaw** opera un "Gateway" local que actúa como plano de control central, gestionando el enrutamiento de mensajes, las sesiones de usuario y la ejecución de herramientas a través de un sistema de permisos configurables. Así como una **Integración Profunda con la Suite de Adobe Creative Cloud**.
 
 [Website](https://openclaw.ai) · [Docs](https://docs.openclaw.ai) · [Vision](VISION.md) · [DeepWiki](https://deepwiki.com/openclaw/openclaw) · [Getting Started](https://docs.openclaw.ai/start/getting-started) · [Updating](https://docs.openclaw.ai/install/updating) · [Showcase](https://docs.openclaw.ai/start/showcase) · [FAQ](https://docs.openclaw.ai/start/faq) · [Wizard](https://docs.openclaw.ai/start/wizard) · [Nix](https://github.com/openclaw/nix-openclaw) · [Docker](https://docs.openclaw.ai/install/docker) · [Discord](https://discord.gg/clawd)
 
