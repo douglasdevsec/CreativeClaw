@@ -93,3 +93,7 @@ package-lock.json
 
 # Local iOS signing overrides
 apps/ios/LocalSigning.xcconfig
+
+# Browser skill — session cookies (NEVER COMMIT)
+skills/browser/sessions/*.enc
+skills/browser/sessions/*.json
